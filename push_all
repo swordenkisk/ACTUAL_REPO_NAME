@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 set -e
-
 cd /home/dev
 
 git add -A
@@ -12,4 +11,4 @@ fi
 
 msg="${1:-auto push $(date '+%Y-%m-%d %H:%M:%S')}"
 git commit -m "$msg"
-git push -u origin main
+git push
