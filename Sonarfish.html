@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Reel X1 - نظام الصيد الذكي</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a1628 0%, #1a3a5c 100%);
+            min-height: 100vh;
+            color: #e0f0ff;
+            line-height: 1.6;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; margin-bottom: 30px; padding: 20px; }
+        .header h1 {
+            font-size: 32px;
+            background: linear-gradient(90deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        .header p { color: #8ab4c7; font-size: 16px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+        .panel {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(0,212,255,0.2);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+        }
+        .panel h2 {
+            color: #00d4ff;
+            font-size: 20px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .component {
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-right: 4px solid #00d4ff;
+            transition: all 0.3s ease;
+        }
+        .component:hover {
+            background: rgba(0,212,255,0.1);
+            transform: translateX(-4px);
+        }
+        .component-title {
+            font-weight: bold;
+            color: #00ff88;
+            font-size: 15px;
+            margin-bottom: 6px;
+        }
+        .component-desc { font-size: 14px; color: #b0d4e8; line-height: 1.6; }
+        .ai-badge {
+            display: inline-block;
+            background: linear-gradient(90deg, #ff0066, #ff6600);
+            color: white;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: 6px;
+        }
+        .specs-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .spec-box {
+            background: rgba(0,0,0,0.4);
+            padding: 14px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(0,255,136,0.3);
+        }
+        .spec-value { font-size: 24px; font-weight: bold; color: #00ff88; }
+        .spec-label { font-size: 12px; color: #8ab4c7; margin-top: 4px; }
+        .flow-step {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: rgba(0,0,0,0.3);
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+        .flow-num {
+            width: 32px; height: 32px;
+            background: linear-gradient(135deg, #00d4ff, #0066ff);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 14px; flex-shrink: 0;
+        }
+        .flow-text { font-size: 14px; color: #e0f0ff; }
+        .arrow { text-align: center; color: #00d4ff; font-size: 20px; margin: -4px 0; }
+        .yacht-edge {
+            background: linear-gradient(90deg, #2c3e50, #34495e);
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ecf0f1;
+            font-size: 14px;
+            margin: 16px 0;
+            border: 2px dashed #7f8c8d;
+        }
+        .reel-visual {
+            width: 100%;
+            height: 140px;
+            background: radial-gradient(circle at 30% 50%, #1a1a2e 0%, #16213e 100%);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin: 16px 0;
+            border: 1px solid rgba(0,212,255,0.3);
+            overflow: hidden;
+        }
+        .reel-circle {
+            width: 70px; height: 70px;
+            border: 5px solid #00d4ff;
+            border-radius: 50%;
+            position: relative;
+            animation: spin 4s linear infinite;
+        }
+        .reel-circle::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 24px; height: 24px;
+            background: #00ff88;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .sensor-dot {
+            position: absolute;
+            width: 10px; height: 10px;
+            background: #ff0066;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.5); }
+        }
+        .control-btn {
+            background: linear-gradient(135deg, #00d4ff, #0066ff);
+            border: none;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 28px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 16px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,212,255,0.3);
+        }
+        .control-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 20px rgba(0,212,255,0.5);
+        }
+        .status-bar {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+        .status-item {
+            background: rgba(0,0,0,0.4);
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; }
+        .green { background: #00ff88; }
+        .blue { background: #00d4ff; }
+        .orange { background: #ff9900; }
+        .advanced-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #5a7a8a;
+            font-size: 13px;
+        }
+        .code-section {
+            background: #0d1117;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            border: 1px solid #30363d;
+        }
+        .code-section pre { color: #c9d1d9; }
+        .keyword { color: #ff7b72; }
+        .string { color: #a5d6ff; }
+        .comment { color: #8b949e; }
+        .function { color: #d2a8ff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎣 AI-Reel X1</h1>
+            <p>نظام عجلة الصيد الذكي بالذكاء الاصطناعي — تثبيت على حافة اليخت</p>
+        </div>
+
+        <div class="grid">
+            <!-- المكونات -->
+            <div class="panel">
+                <h2>⚙️ المكونات الهندسية</h2>
+                
+                <div class="yacht-edge">📍 حافة اليخت — نقطة التثبيت المتحركة</div>
+                
+                <div class="reel-visual">
+                    <div class="reel-circle"></div>
+                    <div class="sensor-dot" style="top: 25px; right: 35px;"></div>
+                    <div class="sensor-dot" style="bottom: 25px; left: 45px; animation-delay: 0.5s;"></div>
+                    <div style="position: absolute; top: 12px; left: 12px; font-size: 12px; color: #00d4ff;">
+                        محرك سيرفو 2000W
+                    </div>
+                </div>
+
+                <div class="component">
+                    <div class="component-title">🤖 وحدة الذكاء الاصطناعي المتكاملة</div>
+                    <div class="component-desc">
+                        <span class="ai-badge">AI Core</span>
+                        معالج NVIDIA Jetson AGX Orin مخصص لتحليل بيانات مستشعرات الشد والاهتزاز في الوقت الفعلي. يتعلم أنماط عض السمكة ويحدد نوعها وحجمها تلقائياً.
+                    </div>
+                </div>
+
+                <div class="component">
+                    <div class="component-title">📡 نظام استشعار متعدد الطبقات</div>
+                    <div class="component-desc">
+                        • <b>مستشعر شد خطي:</b> يقيس قوة الشد بدقة 0.1 نيوتن<br>
+                        • <b>مقياس تسارع ثلاثي المحاور:</b> يكتشف اهتزازات الصنارة بدقة 1000Hz<br>
+                        • <b>مستشعر توتر الألياف البصرية:</b> مدمج في الخيط لقياس الاهتزازات الدقيقة
+                    </div>
+                </div>
+
+                <div class="component">
+                    <div class="component-title">⚡ محرك كهربائي فائق القوة</div>
+                    <div class="component-desc">
+                        محرك سيرفو بدون فرشات (Brushless) بقوة 2000 واط، عزم دوران 80 نيوتن/متر، مع نظام تروس كوكبي لتوليد قوة سحب تصل إلى 150 كجم لحظياً.
+                    </div>
+                </div>
+
+                <div class="component">
+                    <div class="component-title">🎯 نظام الإطلاق الآلي (Auto-Cast)</div>
+                    <div class="component-desc">
+                        ذراع قذف هيدروليكي مع زنبرك مضغوط يقذف الطُعم لمسافة 80-120 متراً بضغطة زر واحدة. يحتوي على نظام تحديد زاوية إطلاق ذكي حسب سرعة الرياح.
+                    </div>
+                </div>
+
+                <div class="component">
+                    <div class="component-title">🔒 قاعدة تثبيت متحركة (Gimbal Mount)</div>
+                    <div class="component-desc">
+                        قاعدة دوارة بـ 3 محاور (Pan/Tilt/Roll) مع نظام تثبيت جيروسكوبي. تتكيف تلقائياً مع حركة اليخت وتبقى الصنارة في وضعية الصيد المثلى.
+                    </div>
+                </div>
+            </div>
+
+            <!-- المواصفات والمنطق -->
+            <div class="panel">
+                <h2>📊 المواصفات التقنية</h2>
+                <div class="specs-grid">
+                    <div class="spec-box">
+                        <div class="spec-value">150</div>
+                        <div class="spec-label">كجم قوة سحب لحظية</div>
+                    </div>
+                    <div class="spec-box">
+                        <div class="spec-value">100</div>
+                        <div class="spec-label">كجم سعة الصيد المستهدف</div>
+                    </div>
+                    <div class="spec-box">
+                        <div class="spec-value">120</div>
+                        <div class="spec-label">متر مدى القذف</div>
+                    </div>
+                    <div class="spec-box">
+                        <div class="spec-value">0.05s</div>
+                        <div class="spec-label">زمن استجابة الاستشعار</div>
+                    </div>
+                    <div class="spec-box">
+                        <div class="spec-value">48V</div>
+                        <div class="spec-label">بطارية ليثيوم أيون</div>
+                    </div>
+                    <div class="spec-box">
+                        <div class="spec-value">IP68</div>
+                        <div class="spec-label">مقاومة الماء والملح</div>
+                    </div>
+                </div>
+
+                <h2 style="margin-top: 24px;">🧠 منطق الذكاء الاصطناعي</h2>
+                <div>
+                    <div class="flow-step">
+                        <div class="flow-num">1</div>
+                        <div class="flow-text"><b>المراقبة الذكية:</b> المستشعرات تراقب الشد والاهتزاز باستمرار (1000 قراءة/ثانية)</div>
+                    </div>
+                    <div class="arrow">↓</div>
+                    <div class="flow-step">
+                        <div class="flow-num">2</div>
+                        <div class="flow-text"><b>اكتشاف العضة:</b> AI يحلل الأنماط ويميز بين عض السمكة والتيار/الأعشاب</div>
+                    </div>
+                    <div class="arrow">↓</div>
+                    <div class="flow-step">
+                        <div class="flow-num">3</div>
+                        <div class="flow-text"><b>تقدير الوزن:</b> خوارزمية تقدر وزن السمكة من قوة السحب الأولية</div>
+                    </div>
+                    <div class="arrow">↓</div>
+                    <div class="flow-step">
+                        <div class="flow-num">4</div>
+                        <div class="flow-text"><b>الوضعية التكيفية:</b> يختار النظام وضعية السحب (سريع/بطيء/نبضي) حسب نوع السمكة</div>
+                    </div>
+                    <div class="arrow">↓</div>
+                    <div class="flow-step">
+                        <div class="flow-num">5</div>
+                        <div class="flow-text"><b>السحب الآلي:</b> المحرك يسحب السمكة تلقائياً مع تعديل Drag حسب المقاومة</div>
+                    </div>
+                    <div class="arrow">↓</div>
+                    <div class="flow-step">
+                        <div class="flow-num">6</div>
+                        <div class="flow-text"><b>التنبيه:</b> إشارة صوتية وضوئية + إرسال إشعار للهاتف عند اقتراب السمكة</div>
+                    </div>
+                </div>
+
+                <div class="status-bar">
+                    <div class="status-item"><div class="status-dot green"></div>نظام AI نشط</div>
+                    <div class="status-item"><div class="status-dot blue"></div>الاتصال باليخت</div>
+                    <div class="status-item"><div class="status-dot orange"></div>البطارية 87%</div>
+                </div>
+
+                <button class="control-btn" onclick="alert('🚀 تم تفعيل وضع الصيد الآلي!')">
+                    🚀 تفعيل وضع الصيد الآلي
+                </button>
+            </div>
+        </div>
+
+        <!-- الميزات المتقدمة -->
+        <div class="panel" style="margin-top: 20px;">
+            <h2>🔬 الميزات المتقدمة والابتكارات</h2>
+            <div class="advanced-grid">
+                <div class="component">
+                    <div class="component-title">🌊 تعويض حركة اليخت</div>
+                    <div class="component-desc">
+                        جيروسكوب IMU + خوارزمية Kalman Filter تتنبأ بحركة الأمواج وتعدل زاوية الصنارة 50 مرة/ثانية لتبقى الطُعم في المكان المستهدف.
+                    </div>
+                </div>
+                <div class="component">
+                    <div class="component-title">🐟 تصنيف الأنواع الذكي</div>
+                    <div class="component-desc">
+                        نموذج CNN مدرب على 500+ نوع سمك يحدد النوع من نمط السحب والاهتزاز، ويختار استراتيجية الصيد المثلى لكل نوع.
+                    </div>
+                </div>
+                <div class="component">
+                    <div class="component-title">📱 التحكم عن بُعد</div>
+                    <div class="component-desc">
+                        تطبيق مخصص يعرض بيانات الشد المباشرة، فيديو تحت الماء (كاميرا اختيارية)، وتحكم كامل في جميع الوظائف.
+                    </div>
+                </div>
+                <div class="component">
+                    <div class="component-title">🛡️ نظام الأمان المتكامل</div>
+                    <div class="component-desc">
+                        مفتاح طوارئ فوري، كسر تلقائي إذا تجاوز الشد 90% من قوة الخيط، وإنذار عند اقتراب السمكة من المركب.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- كود Arduino المبدئي -->
+        <div class="panel" style="margin-top: 20px;">
+            <h2>🔧 كود التحكم المبدئي (Arduino/C++)</h2>
+            <div class="code-section">
+<pre>
+<span class="comment">// AI-Reel X1 - Fishing Reel Control System</span>
+<span class="comment">// github.com/swordenkisk</span>
+
+<span class="keyword">#include</span> <span class="string">&lt;Wire.h&gt;</span>
+<span class="keyword">#include</span> <span class="string">&lt;Servo.h&gt;</span>
+<span class="keyword">#include</span> <span class="string">&lt;MPU6050.h&gt;</span>
+
+<span class="comment">// Pin Definitions</span>
+<span class="keyword">const int</span> MOTOR_PWM = 9;
+<span class="keyword">const int</span> MOTOR_DIR = 8;
+<span class="keyword">const int</span> LOAD_CELL_DOUT = 3;
+<span class="keyword">const int</span> LOAD_CELL_SCK = 2;
+<span class="keyword">const int</span> CAST_SOLENOID = 7;
+<span class="keyword">const int</span> EMERGENCY_STOP = 4;
+
+<span class="comment">// Constants</span>
+<span class="keyword">const float</span> MAX_DRAG_KG = 150.0;
+<span class="keyword">const float</span> BITE_THRESHOLD = 2.5;  <span class="comment">// Newtons</span>
+<span class="keyword">const int</span> SAMPLE_RATE = 1000;        <span class="comment">// Hz</span>
+
+<span class="comment">// State Variables</span>
+<span class="keyword">float</span> currentTension = 0.0;
+<span class="keyword">float</span> estimatedWeight = 0.0;
+<span class="keyword">bool</span> isFishing = false;
+<span class="keyword">bool</span> biteDetected = false;
+
+MPU6050 mpu;
+
+<span class="keyword">void</span> <span class="function">setup</span>() {
+    Serial.begin(115200);
+    Wire.begin();
+    mpu.initialize();
+    
+    pinMode(MOTOR_PWM, OUTPUT);
+    pinMode(MOTOR_DIR, OUTPUT);
+    pinMode(CAST_SOLENOID, OUTPUT);
+    pinMode(EMERGENCY_STOP, INPUT_PULLUP);
+    
+    <span class="function">Serial.println</span>(<span class="string">"AI-Reel X1 Initialized"</span>);
+}
+
+<span class="keyword">void</span> <span class="function">loop</span>() {
+    <span class="comment">// Emergency stop check</span>
+    <span class="keyword">if</span> (digitalRead(EMERGENCY_STOP) == LOW) {
+        <span class="function">emergencyStop</span>();
+        <span class="keyword">return</span>;
+    }
+    
+    <span class="comment">// Read sensors at 1000Hz</span>
+    currentTension = <span class="function">readLoadCell</span>();
+    <span class="keyword">int16_t</span> ax, ay, az;
+    mpu.getAcceleration(&ax, &ay, &az);
+    
+    <span class="comment">// AI Bite Detection Algorithm</span>
+    <span class="keyword">if</span> (!biteDetected && <span class="function">detectBite</span>(currentTension, ax, ay, az)) {
+        biteDetected = true;
+        estimatedWeight = <span class="function">estimateWeight</span>(currentTension);
+        <span class="function">Serial.print</span>(<span class="string">"Bite detected! Est. weight: "</span>);
+        <span class="function">Serial.print</span>(estimatedWeight);
+        <span class="function">Serial.println</span>(<span class="string">" kg"</span>);
+        <span class="function">activateAutoReel</span>();
+    }
+    
+    <span class="comment">// Auto-reel logic</span>
+    <span class="keyword">if</span> (biteDetected && isFishing) {
+        <span class="function">adaptiveReelControl</span>(currentTension, estimatedWeight);
+    }
+    
+    delayMicroseconds(1000);  <span class="comment">// 1ms = 1000Hz</span>
+}
+
+<span class="keyword">bool</span> <span class="function">detectBite</span>(<span class="keyword">float</span> tension, <span class="keyword">int16_t</span> ax, <span class="keyword">int16_t</span> ay, <span class="keyword">int16_t</span> az) {
+    <span class="comment">// Multi-sensor fusion for bite detection</span>
+    <span class="keyword">float</span> vibration = <span class="function">sqrt</span>(ax*ax + ay*ay + az*az) / 16384.0;
+    <span class="keyword">bool</span> tensionSpike = tension > BITE_THRESHOLD;
+    <span class="keyword">bool</span> patternMatch = <span class="function">analyzeVibrationPattern</span>(vibration);
+    
+    <span class="keyword">return</span> tensionSpike && patternMatch;
+}
+
+<span class="keyword">float</span> <span class="function">estimateWeight</span>(<span class="keyword">float</span> initialTension) {
+    <span class="comment">// Weight estimation from initial pull force</span>
+    <span class="keyword">return</span> (initialTension * 0.8) / 9.81;  <span class="comment">// Rough estimate in kg</span>
+}
+
+<span class="keyword">void</span> <span class="function">activateAutoReel</span>() {
+    isFishing = true;
+    <span class="comment">// Start with moderate drag</span>
+    <span class="function">analogWrite</span>(MOTOR_PWM, 100);
+    digitalWrite(MOTOR_DIR, HIGH);
+}
+
+<span class="keyword">void</span> <span class="function">adaptiveReelControl</span>(<span class="keyword">float</span> tension, <span class="keyword">float</span> weight) {
+    <span class="comment">// Adaptive control based on fish behavior</span>
+    <span class="keyword">int</span> pwmValue;
+    
+    <span class="keyword">if</span> (weight > 50.0) {
+        <span class="comment">// Heavy fish: slow and steady</span>
+        pwmValue = <span class="function">map</span>(tension, 0, MAX_DRAG_KG * 9.81, 80, 180);
+    } else {
+        <span class="comment">// Light fish: faster retrieve</span>
+        pwmValue = <span class="function">map</span>(tension, 0, MAX_DRAG_KG * 9.81, 120, 255);
+    }
+    
+    <span class="comment">// Safety: cut if approaching line limit</span>
+    <span class="keyword">if</span> (tension > MAX_DRAG_KG * 9.81 * 0.9) {
+        <span class="function">emergencyStop</span>();
+        <span class="keyword">return</span>;
+    }
+    
+    <span class="function">analogWrite</span>(MOTOR_PWM, pwmValue);
+}
+
+<span class="keyword">void</span> <span class="function">emergencyStop</span>() {
+    <span class="function">analogWrite</span>(MOTOR_PWM, 0);
+    digitalWrite(CAST_SOLENOID, LOW);
+    isFishing = false;
+    biteDetected = false;
+    <span class="function">Serial.println</span>(<span class="string">"EMERGENCY STOP ACTIVATED"</span>);
+}
+
+<span class="keyword">void</span> <span class="function">autoCast</span>() {
+    <span class="comment">// One-button cast mechanism</span>
+    digitalWrite(CAST_SOLENOID, HIGH);
+    delay(200);
+    digitalWrite(CAST_SOLENOID, LOW);
+    <span class="function">Serial.println</span>(<span class="string">"Cast deployed"</span>);
+}
+
+<span class="keyword">float</span> <span class="function">readLoadCell</span>() {
+    <span class="comment">// HX711 load cell reading</span>
+    <span class="keyword">return</span> 0.0;  <span class="comment">// Placeholder</span>
+}
+
+<span class="keyword">bool</span> <span class="function">analyzeVibrationPattern</span>(<span class="keyword">float</span> vibration) {
+    <span class="comment">// AI pattern matching placeholder</span>
+    <span class="keyword">return</span> vibration > 1.2 && vibration < 3.5;
+}
+</pre>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>AI-Reel X1 © 2026 | مشروع مفتوح المصدر | github.com/swordenkisk</p>
+            <p>صمم باستخدام أحدث تقنيات الذكاء الاصطناعي والروبوتات البحرية</p>
+        </div>
+    </div>
+
+    <script>
+        // Interactive features
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('AI-Reel X1 System Loaded');
+            
+            // Simulate real-time sensor updates
+            setInterval(() => {
+                const tension = (Math.random() * 5 + 0.5).toFixed(2);
+                const battery = Math.floor(Math.random() * 5 + 85);
+                // Could update DOM elements here for live dashboard
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
